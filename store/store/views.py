@@ -119,7 +119,7 @@ def accept(request, bid_pk):
 	})
 	h = {'Content-type':'application/json'}
 	Thread(target=lambda:
-		request.post(bid.delivery_user.esl, data=d, headers=h)
+		requests.post(bid.delivery_user.esl, data=d, headers=h)
 	).start()
 	return redirect(reverse('store.views.deliveries'))
 
@@ -187,13 +187,14 @@ def edit_delivery_user(request):
 def event_signal(request, delivery_user_pk):
 	data = json.loads(request.raw_post_data)
 	if data['_domain'] == 'rfq' and data['_name'] == 'bid_available':
-		delivery = Delivery.objects.get(pk=data['delivery_id'])
+		delivery = Delivery.objects.get(id=data['delivery_id'])
 		delivery_user = DeliveryUser.objects.get(pk=delivery_user_pk)
 		bid = Bid(
-			delivery=delivery
-			, delivery_user=delivery_user
-			, estimated=datetime.utcfromtimestamp(int(float(data['estimated']))).replace(tzinfo=timezone.utc)
-			, amount=float(data['amount'])
+			delivery=delivery,
+			delivery_user=delivery_user,
+			estimated=datetime.utcfromtimestamp(int(float(data['estimated']))).replace(tzinfo=timezone.utc),
+			amount=float(data['amount']),
+			bid_id=data['bid_id'],
 		).save()
 	elif data['_domain'] == 'delivery' and data['_name'] == 'complete':
 		delivery = Delivery.objects.get(id=data['delivery_id'], delivery_user__pk=delivery_user_pk)

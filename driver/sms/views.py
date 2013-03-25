@@ -1,3 +1,5 @@
+import sys
+
 from twilio import twiml
 from twilio.rest import TwilioRestClient
 
@@ -12,7 +14,7 @@ from sms.models import *
 def send(sms_user, message):
 	client = TwilioRestClient(settings.SMS_SID, settings.SMS_TOKEN)
 	client.sms.messages.create(
-		body=message,
+		body=message[:160],
 		to=phone_to_e164(sms_user.phone),
 		from_=settings.SMS_PHONE
 	)
@@ -20,6 +22,7 @@ def send(sms_user, message):
 # called by Twilio when an SMS is received
 @require_POST
 def receive(request):
+	print >> sys.stderr, request.POST['Body']
 	assert request.POST['AccountSid'] == settings.SMS_SID
 
 	sms_user = SMSUser.objects.get(phone=e164_to_phone(request.POST['From']))

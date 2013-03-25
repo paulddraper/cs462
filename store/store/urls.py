@@ -9,6 +9,7 @@ urlpatterns = patterns('store.views',
     url(r'^request_delivery/$', 'request_delivery'),
     url(r'^request_delivery/confirm$', 'request_delivery_confirm'),
     url(r'^accept/(\d+)/$', 'accept'),
+    url(r'^pickedup/(\d+)/$', 'pickedup'),
     url(r'^event_signal/(\d+)/$', 'event_signal'),
 )
 

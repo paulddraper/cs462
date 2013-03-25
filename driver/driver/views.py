@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 from geopy.distance import GreatCircleDistance
 import requests
+import sys
 import time
 
 from django.contrib.sites.models import Site
@@ -124,7 +125,7 @@ def send_bid(delivery):
 	d = {
 		'_domain' : 'rfq',
 		'_name' : 'bid_available',
-		'bid_id' : deliveryid.deliveryid
+		'bid_id' : delivery.id,
 		'delivery_id' : delivery.deliveryid,
 		'amount' : 5,
 		'estimated' : time.mktime(delivery.delivery.timetuple()),
@@ -138,7 +139,6 @@ def event_signal(request, shop_pk):
 	shop = FlowerShop.objects.get(pk=shop_pk)
 	driver = shop.driver
 	dist = GreatCircleDistance((shop.lat, shop.lng), (driver.fsq_user.lat, driver.fsq_user.lng)).miles
-	
 	data = json.loads(request.raw_post_data)
 	if data['_domain'] == 'rfq' and data['_name'] == 'delivery_ready':
 		bid = (dist <= driver.max_miles)
@@ -155,7 +155,7 @@ def event_signal(request, shop_pk):
 		)
 		delivery.save()
 		
-		seconds = delivery.pickup - time.time()
+		seconds = int(float(data['pickup'])) - time.time()
 		pickup_str = 'in %dh%dm' % (seconds % (60*60), seconds / 60 % 60) if seconds > 0 else 'right now'
 		if bid:
 			send_bid(delivery)
@@ -163,8 +163,8 @@ def event_signal(request, shop_pk):
 		else:
 			message = 'Delivery ready from %s (%.1f miles) for %s. Pickup %s' % (shop.name, dist, delivery.address, pickup_str)
 		sms.views.send(driver.sms_user, message)
-	
-	elif data['_domain'] == 'rfq' and data['name'] == 'bid_awarded':
+
+	elif data['_domain'] == 'rfq' and data['_name'] == 'bid_awarded':
 		delivery = Delivery.objects.get(id=data['bid_id'], shop__pk=shop_pk)
 		delivery.status = 'awarded'
 		delivery.save()
@@ -178,5 +178,5 @@ def event_signal(request, shop_pk):
 		delivery = Delivery.objects.get(id=data['bid_id'], shop__pk=shop_pk)
 		delivery.status = 'picked up'
 		delivery.save()
-	
+		
 	return HttpResponse(200)
