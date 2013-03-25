@@ -1,5 +1,6 @@
 # Django settings for cs462 project.
 import os
+import sys
 
 ABS_PATH = lambda x: os.path.join(os.path.dirname(__file__), '../'+x)
 
@@ -174,11 +175,21 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stderr
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': True,
         },
