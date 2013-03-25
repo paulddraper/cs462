@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit flower shop
+{% endblock %}
+
+{% block head %}
+{{ user_info.first_name }} {{ user_info.last_name }}
+{% endblock %}
+
+{% block content %}
+<form method="POST" action=".">
+	{{ d_form }}
+	<br/>
+	{{ s_form }} (use XXX-XXX-XXXX format)
+	<br/>
+	<input type="submit"/>
+</form>
+{% endblock %}

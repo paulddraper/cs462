@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Users
+{% endblock %}
+
+{% block head %}
+Users
+{% endblock %}
+
+{% block content %}
+<div style="text-align:center">
+	<h3>These are the amazing drivers that use this site</h3>	
+	{% for driver_info in driver_infos %}
+	<span style="{% if driver_info.id == request.session.person_pk %}font-weight:bold{% endif %}">
+		{{ driver_info.firstName }} {{ driver_info.lastName }}
+	</span>
+	&nbsp;&nbsp;--&nbsp;&nbsp;
+	<a target="_blank" href="http://foursquare.com/user/{{ driver_info.id }}">
+		(foursquare profile)
+	</a>
+	<br/>
+	{% endfor %}
+</div>
+{% endblock %}

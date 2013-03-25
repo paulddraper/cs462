@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit flower shop
+{% endblock %}
+
+{% block head %}
+{{ user_info.first_name }} {{ user_info.last_name }}
+{% endblock %}
+
+{% block content %}
+<form method="POST" action=".">
+	{{ form }}
+	<br/>
+	<input type="submit" value="Save changes"/>
+</form>
+<br/>
+My ESL for this shop:
+<br/>
+http://{{ request.META.HTTP_HOST }}{% url driver.views.event_signal form.instance.pk %}
+{% endblock %}

@@ -1,0 +1,41 @@
+<html>
+	<title>
+		CS 462 | {% block title %}{% endblock %}
+	</title>
+	<head>
+		<link rel="shortcut icon" href="http://home.byu.edu/home/sites/all/themes/homepage/favicon.ico"/>
+	</head>
+	<body style="background-color:#e6e6fa;font-family:sans-serif">
+		<div style="text-align:center">
+			<h1>
+				{% block head %}{% endblock %}
+			</h1>
+			<a href="{% url driver.views.index %}">
+				Users
+			</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			{% if request.session.person_pk %}
+			<a href="{% url driver.views.edit_driver %}">
+				My account
+			</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="{% url driver.views.deliveries %}">
+				Deliveries
+			</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="{% url driver.views.shops %}">
+				Flower shops
+			</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="{% url foursquare.views.logout %}">
+				Logout
+			</a>
+			{% else %}
+			<a href="{% url foursquare.views.oauth_auth %}">
+				Login with Foursquare
+			</a>
+			{% endif %}
+		</div>
+		{% block content %}{% endblock %}
+	</body>
+</html>

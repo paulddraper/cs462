@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block nav %}
+{% with nav_selection='new_delivery_user' %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+{% block content_title %}
+New driver registration
+{% endblock %}
+
+{% block content %}
+{% if uform.errors or dform.errors %}
+<div class="accordion-inner">
+	<div style="width:30em;margin-left:6em;margin-right:6em;color:#FF0000">
+	{{ uform.errors }}
+	{{ dform.errors }}
+	</div>
+</div>
+{% endif %}
+*Required fields
+<form action="{{ request.url }}" method="post" class="form-horizontal"> {% csrf_token %}
+	<div style="width:30em;margin-left:4em;">
+		<div class="control-group">
+			<label class="control-label" for="id_username">*Username:</label>
+			&nbsp;
+			{{ uform.username }}
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="id_password1">*Password:</label>
+			&nbsp;
+			{{ uform.password1 }}
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="id_password2">*Confirm password:</label>
+			&nbsp;
+			{{ uform.password2 }}
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="id_esl">*ESL:</label>
+			&nbsp;
+			{{ dform.esl }}
+		</div>
+		<div>
+			*Required fields
+		</div>
+	</div>
+	<div class="pagination-centered">
+		<button class="btn btn-primary" type="submit">Register me!</button>
+	</div>
+	<input type="hidden" id="next" value="{{ next }}" />
+</form>
+{% endblock %}

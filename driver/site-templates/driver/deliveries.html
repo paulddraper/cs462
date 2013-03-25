@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+All deliveries
+{% endblock %}
+
+{% block head %}
+{{ user_info.first_name }} {{ user_info.last_name }}
+{% endblock %}
+
+{% block content %}
+	{% if person.pk == request.session.person_pk %}<img src="{{ user_info.photo }}"/>{% endif %}
+	<br/>
+	<span style="font-weight:bold">Home City:</span>
+	{{ user_info.homeCity }}
+	<br/>
+	<br/>
+	<span style="font-weight:bold">Deliveries:</span>
+	<table border="1">
+		<thead>
+			<td>Flower Shop</td>
+			<td>Pickup date</td>
+			<td>Delivery date</td>
+			<td>Delivery address</td>
+			<td>Status</td>
+		</thead>
+		{% for delivery in deliveries %}
+		<tr>
+			<td>{{ delivery.shop.name }}</td>
+			<td>{{ delivery.pickup }}</td>
+			<td>{{ delivery.delivery }}</td>
+			<td>{{ delivery.address}}</td>
+			<td>
+				{{ delivery.status }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Flower shops
+{% endblock %}
+
+{% block head %}
+{{ user_info.first_name }} {{ user_info.last_name }}
+{% endblock %}
+
+{% block content %}
+	{% if person.pk == request.session.person_pk %}<img src="{{ user_info.photo }}"/>{% endif %}
+	<br/>
+	<span style="font-weight:bold">Home City:</span>
+	{{ user_info.homeCity }}
+	<br/>
+	<br/>
+	<span style="font-weight:bold">Flower shops:</span>
+	<table border="1">
+		<thead>
+			<td>Name</td>
+			<td>Latititude</td>
+			<td>Longitude</td>
+			<td>Shop ESL</td>
+			<td>My ESL</td>
+		</thead>
+		{% for shop in shops %}
+		<tr>
+			<td>
+				<a href="{% url driver.views.edit_shop shop.pk %}"> 
+					{{ shop.name }}
+				</a>
+			</td>
+			<td>{{ shop.lat }}</td>
+			<td>{{ shop.lng }}</td>
+			<td>{{ shop.esl }}</td>
+			<td>http://{{ request.META.HTTP_HOST }}{% url driver.views.event_signal shop.pk %}</td>
+		</tr>
+		{% endfor %}
+		<tr>
+			<td>
+				<a href="{% url driver.views.add_shop %}">
+					Add shop
+				</a>
+			</td>
+			<td/>
+			<td/>
+			<td/>
+			<td/>
+		</tr>
+	</table>
+{% endblock %}
