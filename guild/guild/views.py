@@ -3,7 +3,8 @@ import requests
 import time
 
 from django.contrib import auth
-from django.contrib.auth.decorators import user_passes_test, login_required, staff_member_requred
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -30,7 +31,7 @@ def main(request):
 def new_driver(request):
 	if request.method == 'POST':
 		uform = MyUserCreationForm(request.POST)
-		dform = DeliveryUserForm(request.POST)
+		dform = DriverForm(request.POST)
 		if uform.is_valid() and dform.is_valid():
 			user = uform.save()
 			driver = dform.save(commit=False)
@@ -41,9 +42,9 @@ def new_driver(request):
 			return redirect('guild.views.edit_driver')
 	else:
 		uform = MyUserCreationForm()
-		dform = DeliveryUserForm()
+		dform = DriverForm()
 	d = {'uform':uform, 'dform':dform,}
-	return render(request, 'store/new_driver.html', d)
+	return render(request, 'guild/new_driver.html', d)
 
 
 @driver_required
@@ -56,17 +57,46 @@ def edit_driver(request):
 			dform.save()
 	else:
 		uform = MyUserCreationForm(instance=request.user)
-		dform = DeliveryUserForm(instance=request.user.driver)
+		dform = DriverForm(instance=request.user.driver)
 	d = {
 		'uform' : uform,
 		'dform' : dform,
 	}
-	return render(request, 'store/edit_driver.html', d)
+	return render(request, 'guild/edit_driver.html', d)
 
 @staff_member_required
-def rankings(request):
+def stores(request):
+	d = {'stores':Store.objects.all()}
+	return render(request, 'guild/stores.html', d)
+
+@staff_member_required
+def new_store(request):
+	if request.method == 'POST':
+		form = StoreForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect(reverse('guild.views.stores'))
+	else:
+		form = StoreForm()
+	d = {'form' : form}
+	return render(request, 'guild/new_store.html', d)
+
+@staff_member_required
+def edit_store(request, store_pk):
+	store = Store.objects.get(pk=store_pk)
+	if request.method == 'POST':
+		form = StoreForm(request.POST, instance=store)
+		if form.is_valid():
+			form.save()
+			return redirect(reverse('guild.views.stores'))
+	else:
+		form = StoreForm(instance=store)
+	return render(request, 'guild/edit_store.html', {'form':form})
+
+@staff_member_required
+def ranking(request):
 	d = {'drivers':Driver.delay_avgs()}
-	return render(request, 'guild/rankings.html', d)
+	return render(request, 'guild/ranking.html', d)
 
 # called by store website to signal events
 @csrf_exempt
@@ -94,13 +124,13 @@ def event_signal_store(request, store_pk):
 		delivery.save()
 		data['delivery_id'] = delivery.id
 		data['bid_id'] = bid.bid_id
-		h = {'Content-type':'application/json'}e(tzinfo=timezone.utc)
+		h = {'Content-type':'application/json'}
 		requests.post(bid.driver.esl, data=json.dumps(d), headers=h)
 		
 	elif data['_domain'] == 'delivery' and data['_name'] == 'picked_up':
 		delivery = Delivery.objects.get(delivery_id=data['delivery_id'], store__pk=store_pk)
 		data['delivery_id'] = delivery.id
-		h = {'Content-type':'application/json'}e(tzinfo=timezone.utc)
+		h = {'Content-type':'application/json'}
 		requests.post(delivery.accepted.driver.esl, data=json.dumps(d), headers=h)
 	
 	else:

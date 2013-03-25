@@ -12,31 +12,33 @@
 				<div class="navbar-inner">
 					<div style="margin-left:1%; margin-right:1%;">
 						<ul class="nav">
-							<li class="brand" style="color:#3355FF;" href="http://acm.byu.edu" target="_blank">
-								Flowers on Wheels
+							<li>
+								<a>
+									The GUILD
+								</a>
 							</li>
 							{% if not user.is_authenticated %}
 							<li class="{% ifequal nav_selection 'new_delivery_user' %}active{% endifequal %}">
-								<a href="{% url store.views.new_delivery_user %}">Register</a>
+								<a href="{% url guild.views.new_driver %}">Register</a>
 							</li>
 							<li class="{% ifequal nav_selection 'login' %}active{% endifequal %}">
 								<a href="{% url django.contrib.auth.views.login %}">Login</a>
 							</li>
 							{% endif %}
-							{% if user.store_user %}
-							<li class="{% ifequal nav_selection 'edit_store_user' %}active{% endifequal %}">
-								<a href="{% url store.views.edit_store_user %}">Edit account</a>
+							{% if user.is_staff %}
+							<li class="{% ifequal nav_selection 'new_store' %}active{% endifequal %}">
+								<a href="{% url guild.views.new_store %}">Add store</a>
 							</li>
-							<li class="{% ifequal nav_selection 'deliveries' %}active{% endifequal %}">
-								<a href="{% url store.views.deliveries %}">Deliveries</a>
+							<li class="{% ifequal nav_selection 'stores' %}active{% endifequal %}">
+								<a href="{% url guild.views.stores %}">Stores</a>
 							</li>
-							<li class="{% ifequal nav_selection 'request_delivery' %}active{% endifequal %}">
-								<a href="{% url store.views.request_delivery %}">Request delivery</a>
+							<li class="{% ifequal nav_selection 'ranking' %}active{% endifequal %}">
+								<a href="{% url guild.views.ranking %}">Driver ranking</a>
 							</li>
 							{% endif %}
-							{% if user.delivery_user %}
-							<li class="{% ifequal nav_selection 'edit_delivery_user' %}active{% endifequal %}">
-								<a href="{% url store.views.edit_delivery_user%}">Edit account</a>
+							{% if user.driver %}
+							<li class="{% ifequal nav_selection 'edit_driver' %}active{% endifequal %}">
+								<a href="{% url guild.views.edit_driver%}">Edit account</a>
 							</li>
 							{% endif %}
 							{% if user.is_authenticated %}

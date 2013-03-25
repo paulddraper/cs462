@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Driver ranking
+{% endblock %}
+
+{% block nav %}
+{% with nav_selection='ranking' %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+
+{% block content_title %}
+Driver ranking
+{% endblock %}
+
+{% block content %}
+<div class="accordion-inner"> 
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td width=50%>Store ESL</td>
+				<td width=50%>My ESL</td>
+				<td></td>
+			</tr>
+		</thead>
+		{% for store in stores %}
+			<tr>
+				<td>
+					{{ store.esl }}
+				</td>
+				<td>
+					http://{{ request.META.HTTP_HOST }}{% url guild.views.event_signal_store store.pk %}
+				</td>
+				<td>
+					<a href="{% url guild.views.edit_store store.pk %}">
+						Edit
+					</a>
+				</td>
+			</tr>
+		{% endfor %}
+   	</table>
+</div>
+{% endblock %}

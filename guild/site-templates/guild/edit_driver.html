@@ -5,7 +5,7 @@ Edit account
 {% endblock %}
 
 {% block nav %}
-{% with nav_selection='edit_store_user' %}
+{% with nav_selection='edit_driver' %}
 {{ block.super }}
 {% endwith %}
 {% endblock %}
@@ -15,10 +15,11 @@ Edit account
 {% endblock %}
 
 {% block content %}
-{% if uform.errors %}
+{% if uform.errors or dform.errors %}
 <div class="accordion-inner">
 	<div style="width:30em;margin-left:6em;margin-right:6em;color:#FF0000">
 	{{ uform.errors }}
+	{{ dform.errors }}
 	</div>
 </div>
 {% endif %}
@@ -52,6 +53,15 @@ Edit account
 			&nbsp;
 			{{ uform.email }}
 		</div>
+		<div class="control-group">
+			<label class="control-label" for="id_esl">Event Signal URL:</label>
+			&nbsp;
+			{{ dform.esl }}
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="store_esl">This guild's ESL:</label>
+				http://{{ request.META.HTTP_HOST }}{% url guild.views.event_signal_driver user.driver.pk %}
+			</label>
 	</div>
 	<div class="pagination-centered">
 		<button class="btn btn-primary" type="submit">Save changes</button>

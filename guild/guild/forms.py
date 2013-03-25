@@ -41,9 +41,11 @@ class MyUserChangeForm(UserChangeForm):
 		model = User
 		exclude = ('is_active', 'is_staff', 'is_superuser', 'password', 'last_login', 'date_joined',)
 
-class DriverUserForm(forms.ModelForm):
+class DriverForm(forms.ModelForm):
 	class Meta:
-		model = DeliveryUser
+		model = Driver
 		exclude = ('user',)
 
-
+class StoreForm(forms.ModelForm):
+	class Meta:
+		model = Store

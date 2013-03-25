@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Driver ranking
+{% endblock %}
+
+{% block nav %}
+{% with nav_selection='ranking' %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+
+{% block content_title %}
+Driver ranking
+{% endblock %}
+
+{% block content %}
+<div class="accordion-inner"> 
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<td width=40%>Driver name</td>
+				<td width=30%>Deliveries</td>
+				<td width=30%>Avg delay</td>
+			</tr>
+		</thead>
+		{% for driver in drivers %}
+			<tr>
+				<td>{{ driver.user.get_full_name }}</td>
+				<td>{{ driver.cnt_deliveries }}</td>
+				<td>{{ driver.avg_delay }} min</td>
+			</tr>
+		{% endfor %}
+   	</table>
+</div>
+{% endblock %}

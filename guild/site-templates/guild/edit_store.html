@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit store
+{% endblock %}
+
+{% block nav %}
+{% with nav_selection='edit_store' %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+{% block content_title %}
+Edit store
+{% endblock %}
+
+{% block content %}
+{% if form.errors %}
+<div class="accordion-inner">
+	<div style="width:30em;margin-left:6em;margin-right:6em;color:#FF0000">
+	{{ form.errors }}
+	</div>
+</div>
+{% endif %}
+*Required fields
+<form action="{{ request.url }}" method="post" class="form-horizontal">{% csrf_token %}
+	{{ form }}
+	<div class="pagination-centered">
+		<button class="btn btn-primary" type="submit">Save</button>
+	</div>
+</form>
+ESL: http://{{ request.META.HTTP_HOST }}{% url guild.views.event_signal_store form.instance.pk %}
+{% endblock %}
