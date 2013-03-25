@@ -1,5 +1,6 @@
 # Django settings for cs462 project.
 import os
+import sys
 
 ABS_PATH = lambda x: os.path.join(os.path.dirname(__file__), '../'+x)
 
