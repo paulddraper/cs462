@@ -110,6 +110,7 @@ def done_sms(sms_user):
 		'_domain' : 'delivery',
 		'_name' : 'complete',
 		'delivery_id' : delivery.deliveryid,
+		'delivered' : time.mktime(timezone.now().timetuple())
 	}
 	h = {'Content-type':'application/json',}
 	requests.post(delivery.shop.esl, data=json.dumps(d), headers=h)
@@ -175,7 +176,7 @@ def event_signal(request, shop_pk):
 		sms.views.send(driver.sms_user, message)
 		
 	elif data['_domain'] == 'delivery' and data['_name'] == 'picked_up':
-		delivery = Delivery.objects.get(id=data['bid_id'], shop__pk=shop_pk)
+		delivery = Delivery.objects.get(deliveryid=data['delivery_id'], shop__pk=shop_pk)
 		delivery.status = 'picked up'
 		delivery.save()
 		

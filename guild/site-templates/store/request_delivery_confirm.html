@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Request delivery
+{% endblock %}
+
+{% block nav %}
+{% with nav_selection='request_delivery' %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+{% block content_title %}
+Request delivery
+{% endblock %}
+
+{% block content %}
+Please double-check the information. If it is correct, confirm your request.
+Otherwise, please go back and correct.
+{% if form.errors %}
+<div class="accordion-inner">
+	<div style="width:30em;margin-left:6em;margin-right:6em;color:#FF0000">
+	{{ form.errors }}
+	</div>
+</div>
+{% endif %}
+<br/><br/>
+<form action="{% url store.views.request_delivery_confirm %}" method="post" class="form-horizontal">{% csrf_token %}
+	<div style="width:30em;margin-left:4em;">
+		<div class="control-group">
+			<b>Location:</b>
+			&nbsp;
+			{{ form.address.value }}
+		</div>
+		<div class="control-group">
+			<b>Latitude:</b>
+			&nbsp;
+			{{ form.lat.value }}
+		</div>
+		<div class="control-group">
+			<b>Longitude:</b>
+			&nbsp;
+			{{ form.lng.value }}
+		</div>
+		<div class="control-group">
+			<b>Description:</b>
+			&nbsp;
+			{{ form.description.value }}
+		</div>
+		<div class="control-group">
+			<b>Pickup date:</b>
+			&nbsp;
+			{{ form.pickup.value }}
+		</div>
+	</div>
+	{{ form.description.as_hidden }}
+	{{ form.address.as_hidden }}
+	{{ form.description.as_hidden }}
+	{{ form.pickup.as_hidden }}
+	{{ form.delivery.as_hidden }}
+	{{ form.lat.as_hidden }}
+	{{ form.lng.as_hidden }}
+	<div class="pagination-centered">
+		<button class="btn btn-success" type="submit">Confirm</button>
+	</div>
+</form>
+{% endblock %}
