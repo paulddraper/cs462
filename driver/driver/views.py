@@ -3,6 +3,7 @@ import json
 from geopy.distance import GreatCircleDistance
 import requests
 import sys
+import threading
 import time
 
 from django.contrib.sites.models import Site
@@ -132,7 +133,7 @@ def send_bid(delivery):
 		'estimated' : time.mktime(delivery.delivery.timetuple()),
 	}
 	h = {'Content-type':'application/json',}
-	requests.post(shop.esl, data=json.dumps(d), headers=h)
+	threading.Thread(target=lambda: requests.post(shop.esl, data=json.dumps(d), headers=h)).start()
 
 
 @require_POST
