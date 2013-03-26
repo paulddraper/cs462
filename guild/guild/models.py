@@ -21,14 +21,13 @@ class Driver(models.Model):
 	def delay_avgs():
 		drivers = list(Driver.objects.all())
 		for driver in drivers:
-			deliveries = Delivery.objects.filter(accepted__driver=driver).exclude(delivered=None)
-			avg_start = deliveries.aggregate(models.Avg('delivery'))['delivery__avg']
-			avg_end = deliveries.aggregate(models.Avg('delivered'))['delivered__avg']
-			try:
-				driver.avg_delay = (avg_end - avg_start) / 60
-			except TypeError:
+			deliveries = list(Delivery.objects.filter(accepted__driver=driver).exclude(delivered=None))
+			if deliveries:
+				driver.avg_delay = sum(map(lambda d: (d.delivered - d.delivery).total_seconds(), deliveries)) \
+					/ len(deliveries) / 60
+			else:
 				driver.avg_delay = 0
-			driver.cnt_deliveries = deliveries.count()
+			driver.cnt_deliveries = len(deliveries)
 		return drivers
 
 class Delivery(models.Model):
