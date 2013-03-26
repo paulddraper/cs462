@@ -13,12 +13,6 @@ class Driver(models.Model):
 class FlowerShop(models.Model):
 	driver = models.ForeignKey(Driver, editable=False)
 	name = models.CharField(max_length=100)
-	lat= models.FloatField(
-		validators=[validators.MaxValueValidator(90), validators.MinValueValidator(-90),]
-	)
-	lng = models.FloatField(
-		validators=[validators.MaxValueValidator(180), validators.MinValueValidator(-180),]
-	)
 	esl = models.URLField(blank=True, null=True)
 
 	def __unicode__(self):

@@ -139,9 +139,9 @@ def send_bid(delivery):
 def event_signal(request, shop_pk):
 	shop = FlowerShop.objects.get(pk=shop_pk)
 	driver = shop.driver
-	dist = GreatCircleDistance((shop.lat, shop.lng), (driver.fsq_user.lat, driver.fsq_user.lng)).miles
 	data = json.loads(request.raw_post_data)
 	if data['_domain'] == 'rfq' and data['_name'] == 'delivery_ready':
+		dist = GreatCircleDistance((float(data['store_lat']), float(data['store_lng'])), (driver.fsq_user.lat, driver.fsq_user.lng)).miles
 		bid = (dist <= driver.max_miles)
 		delivery = Delivery(
 			driver=driver,
@@ -172,7 +172,7 @@ def event_signal(request, shop_pk):
 		
 		seconds = time.mktime(delivery.pickup.timetuple()) - time.time()
 		pickup_str = 'in %dh%dm' % (seconds % (60*60), seconds / 60 % 60) if seconds > 0 else 'right now'
-		message = 'Bid awarded for delivery from %s (%.1f miles) for %s. Pickup %s' % (shop.name, dist, delivery.address, pickup_str)	
+		message = 'Bid awarded for delivery from %s for %s. Pickup %s' % (shop.name, delivery.address, pickup_str)	
 		sms.views.send(driver.sms_user, message)
 		
 	elif data['_domain'] == 'delivery' and data['_name'] == 'picked_up':

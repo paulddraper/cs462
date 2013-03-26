@@ -91,6 +91,8 @@ def request_delivery_confirm(request):
 				'address' : delivery.address,
 				'lat' : delivery.lat,
 				'lng' : delivery.lng,
+				'store_lat' : 40.2500,
+				'store_lng' : -111.6500,
 				'pickup' : time.mktime(delivery.pickup.timetuple()),
 				'delivery' : time.mktime(delivery.delivery.timetuple()),
 				'desc' : delivery.description,
