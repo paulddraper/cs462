@@ -23,8 +23,8 @@ class Driver(models.Model):
 		for driver in drivers:
 			deliveries = list(Delivery.objects.filter(accepted__driver=driver).exclude(delivered=None))
 			if deliveries:
-				driver.avg_delay = sum(map(lambda d: (d.delivered - d.delivery).total_seconds(), deliveries)) \
-					/ len(deliveries) / 60
+				driver.avg_delay = sum(map(lambda d: (d.delivered - d.delivery).total_seconds()/60-60, deliveries)) \
+					/ len(deliveries)
 			else:
 				driver.avg_delay = 0
 			driver.cnt_deliveries = len(deliveries)
