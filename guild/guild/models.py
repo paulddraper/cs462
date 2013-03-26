@@ -7,11 +7,12 @@ class Store(models.Model):
 	esl = models.URLField(blank=True, null=True)
 
 	def __unicode__(self):
-		return '%s''s %s' % (esl,)
+		return str(self.esl)
 
 class Driver(models.Model):
 	user = models.OneToOneField(User, related_name='driver')
 	esl = models.URLField(verbose_name='event signal URL', blank=True, null=True)
+	status = models.CharField(max_length=35, blank=True, null=True)
 
 	def __unicode__(self):
 		return self.user.get_full_name()
@@ -20,10 +21,14 @@ class Driver(models.Model):
 	def delay_avgs():
 		drivers = list(Driver.objects.all())
 		for driver in drivers:
-			deliveries = Delivery.filter(accepted=driver.bid).exclude(delivered=None)
-			avg_start = deliveries.aggregate(models.Avg('delivery'))
-			avg_end = deliveries.aggregate(models.Avg('delivered'))
-			driver.avg_dely = (avg_start - avg_end).total_minutes()
+			deliveries = Delivery.objects.filter(accepted__driver=driver).exclude(delivered=None)
+			avg_start = deliveries.aggregate(models.Avg('delivery'))['delivery__avg']
+			avg_end = deliveries.aggregate(models.Avg('delivered'))['delivered__avg']
+			try:
+				driver.avg_delay = (avg_end - avg_start) / 60
+			except TypeError:
+				driver.avg_delay = 0
+			driver.cnt_deliveries = deliveries.count()
 		return drivers
 
 class Delivery(models.Model):

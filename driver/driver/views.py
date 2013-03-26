@@ -146,8 +146,8 @@ def event_signal(request, shop_pk):
 		delivery = Delivery(
 			driver=driver,
 			shop=shop,
-			pickup=datetime.utcfromtimestamp(int(float(data['pickup']))).replace(tzinfo=timezone.utc),
-			delivery=datetime.utcfromtimestamp(int(float(data['delivery']))).replace(tzinfo=timezone.utc),
+			pickup=datetime.utcfromtimestamp(int(float(data['pickup']))),
+			delivery=datetime.utcfromtimestamp(int(float(data['delivery']))),
 			deliveryid=data['delivery_id'],
 			address=data['address'],
 			lat=data['lat'],
@@ -170,7 +170,7 @@ def event_signal(request, shop_pk):
 		delivery.status = 'awarded'
 		delivery.save()
 		
-		seconds = delivery.pickup - time.time()
+		seconds = time.mktime(delivery.pickup.timetuple()) - time.time()
 		pickup_str = 'in %dh%dm' % (seconds % (60*60), seconds / 60 % 60) if seconds > 0 else 'right now'
 		message = 'Bid awarded for delivery from %s (%.1f miles) for %s. Pickup %s' % (shop.name, dist, delivery.address, pickup_str)	
 		sms.views.send(driver.sms_user, message)

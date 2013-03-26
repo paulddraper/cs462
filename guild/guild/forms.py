@@ -44,7 +44,7 @@ class MyUserChangeForm(UserChangeForm):
 class DriverForm(forms.ModelForm):
 	class Meta:
 		model = Driver
-		exclude = ('user',)
+		exclude = ('user','status')
 
 class StoreForm(forms.ModelForm):
 	class Meta:

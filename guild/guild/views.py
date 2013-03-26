@@ -1,5 +1,6 @@
 import json
 import requests
+import sys
 import time
 
 from django.contrib import auth
@@ -108,30 +109,34 @@ def event_signal_store(request, store_pk):
 	if data['_domain'] == 'rfq' and data['_name'] == 'delivery_ready':
 		delivery = Delivery(
 			store=store,
-			delivery=datetime.utcfromtimestamp(int(float(data['delivery']))).replace(tzinfo=timezone.utc),
+			delivery=datetime.utcfromtimestamp(int(float(data['delivery']))),
 			delivery_id=data['delivery_id']
 		)
 		delivery.save()
 		data['delivery_id'] = delivery.id
 		h = {'Content-type':'application/json'}
-		for driver in Driver.delay_avgs().order_by('avg_delay')[:3]:
-			requests.post(driver.esl, data=json.dumps(d), headers=h)
+		for driver in sorted(Driver.delay_avgs(), cmp=lambda x,y: x.avg_delay < y.avg_delay)[:3]:
+			requests.post(driver.esl, data=json.dumps(data), headers=h)
 	
 	elif data['_domain'] == 'rfq' and data['_name'] == 'bid_awarded':
-		delivery = Delivery.objects.get(delivery_id=data['delivery_id'], store__pk=store_pk)
-		bid = Bid.objects.get(id=data['bid_id'], delivery=delivery)
+		bid = Bid.objects.get(id=data['bid_id'], delivery__store__pk=store_pk)
+		delivery = bid.delivery
 		delivery.accepted = bid
 		delivery.save()
+		bid.driver.status = 'bid awarded'
+		bid.driver.save()
 		data['delivery_id'] = delivery.id
 		data['bid_id'] = bid.bid_id
 		h = {'Content-type':'application/json'}
-		requests.post(bid.driver.esl, data=json.dumps(d), headers=h)
+		requests.post(bid.driver.esl, data=json.dumps(data), headers=h)
 		
 	elif data['_domain'] == 'delivery' and data['_name'] == 'picked_up':
 		delivery = Delivery.objects.get(delivery_id=data['delivery_id'], store__pk=store_pk)
+		delivery.accepted.driver.status = 'picked up'
+		delivery.accepted.driver.save()
 		data['delivery_id'] = delivery.id
 		h = {'Content-type':'application/json'}
-		requests.post(delivery.accepted.driver.esl, data=json.dumps(d), headers=h)
+		requests.post(delivery.accepted.driver.esl, data=json.dumps(data), headers=h)
 	
 	else:
 		raise Exception(data)
@@ -154,19 +159,22 @@ def event_signal_driver(request, driver_pk):
 			bid_id=data['bid_id']
 		)
 		bid.save()
+		driver.status = 'bid'
+		driver.save()
 		data['bid_id'] = bid.id
 		data['delivery_id'] = delivery.delivery_id
 		h = {'Content-type':'application/json'}
-		requests.post(delivery.store.esl, data=json.dumps(d), headers=h)
+		requests.post(delivery.store.esl, data=json.dumps(data), headers=h)
 	
 	elif data['_domain'] == 'delivery' and data['_name'] == 'complete':
-		delivery = Bid.objects.get(bid_id=data['bid_id'], driver=driver).delivery
-		delivery.delivered = datetime.utcfromtimestamp(int(float(data['delivered']))).replace(tzinfo=timezone.utc),
+		delivery = Delivery.objects.get(id=data['delivery_id'], accepted__driver=driver)
+		delivery.delivered = datetime.utcfromtimestamp(int(float(data['delivered']))).replace(tzinfo=timezone.utc)
 		delivery.save()
-		data['bid_id'] = bid.id
+		driver.status = 'delivered'
+		driver.save()
 		data['delivery_id'] = delivery.delivery_id
 		h = {'Content-type':'application/json'}
-		requests.post(delivery.store.esl, data=json.dumps(d), headers=h)
+		requests.post(delivery.store.esl, data=json.dumps(data), headers=h)
 
 	else:
 		raise Exception(data)

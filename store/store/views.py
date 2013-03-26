@@ -192,12 +192,12 @@ def event_signal(request, delivery_user_pk):
 		bid = Bid(
 			delivery=delivery,
 			delivery_user=delivery_user,
-			estimated=datetime.utcfromtimestamp(int(float(data['estimated']))).replace(tzinfo=timezone.utc),
+			estimated=datetime.utcfromtimestamp(int(float(data['estimated']))),
 			amount=float(data['amount']),
 			bid_id=data['bid_id'],
 		).save()
 	elif data['_domain'] == 'delivery' and data['_name'] == 'complete':
 		delivery = Delivery.objects.get(id=data['delivery_id'], accepted__delivery_user__pk=delivery_user_pk)
-		delivery.delivered = datetime.utcfromtimestamp(int(float(data['delivered']))).replace(tzinfo=timezone.utc)
+		delivery.delivered = datetime.utcfromtimestamp(int(float(data['delivered'])))
 		delivery.save()
 	return HttpResponse(200)
